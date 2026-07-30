@@ -1,0 +1,19 @@
+# 依赖
+node_modules
+.pnpm-store
+
+# 向量库、上传文件
+backend/chroma_db
+backend/uploads
+
+# 环境变量
+backend/.env
+frontend-vue3/.env.local
+
+# 构建产物
+dist
+backend/dist
+
+# 系统缓存
+.DS_Store
+npm-debug.log
