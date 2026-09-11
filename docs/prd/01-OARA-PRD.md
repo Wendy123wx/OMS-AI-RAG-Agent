@@ -24,7 +24,8 @@
 | 需求沟通纪要（整理版） | `docs/meeting/20260908-OMS智能问答系统需求沟通-整理.md` | 原始需求来源 |
 | PRD 补充记录 | `docs/meeting/20260909-系统prd补充记录.md` | V1.2 定稿依据 |
 | 领域模型 | `docs/prd/02-领域模型.md` | DDD 领域建模，与本文档联动维护 |
-| 页面架构总览 | `docs/prd/03-frontend-prd.md` | 待生成（页面拆分阶段产出） |
+| 页面架构总览 | `docs/prd/03-frontend-prd.md` | 页面拆分与三级弹窗分类（V1.4） |
+| 子页 PRD 目录 | `docs/prd/03-pages/` | 二级页面 + 三级弹窗 PRD |
 
 > **文档治理**：本文件（`01-OARA-PRD.md`）为 OARA 系统 PRD 的唯一主文档。
 
