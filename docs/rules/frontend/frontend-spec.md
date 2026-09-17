@@ -5,12 +5,12 @@
 | 项目 | 内容 |
 | --- | --- |
 | 文档名称 | OARA（OMS 智能问答系统）前端开发规范 |
-| 版本 | V1.0 |
-| 生效范围 | 本仓库全部前端代码（`src/` 下所有目录），含普通业务页面与 AI 智能体交互页面（问答平台 P02、历史记录 P03-01/P03-02 等 SSE 流式/多轮对话场景）；覆盖人工开发者与 AI 编码智能体两类执行主体 |
+| 版本 | V1.1 |
+| 生效范围 | 本仓库全部前端代码（`src/` 下所有目录），含普通业务页面与 AI 智能体交互页面（问答平台 P02、历史记录 P03-01/P03-02、答案来源详情 P10/C06 等 SSE 流式/多轮对话与来源追溯场景），以及管理后台知识库管理 P09；覆盖人工开发者与 AI 编码智能体两类执行主体 |
 | 适用技术栈 | Vue 3（`<script setup>` + Composition API）、TypeScript（strict）、Vite；状态管理 Pinia；路由 Vue Router 4；HTTP 客户端 Axios；流式通信 `fetch` + `ReadableStream`/`AbortController`；UI 组件库 Element Plus（如团队已另行选型，只需替换 §7.1，其余规则不变）；样式方案 SCSS + BEM；代码规范工具 ESLint + Prettier + Stylelint；单测 Vitest |
 | 状态 | 生效 |
 | 创建日期 | 2026-09-11 |
-| 更新日期 | 2026-09-11 |
+| 更新日期 | 2026-09-17 |
 | 依据 | `docs/prd/01-OARA-PRD.md`、`docs/prd/02-领域模型.md`、`docs/prd/03-frontend-prd.md`、`docs/prd/03-pages/*` |
 
 ### 修改记录
@@ -18,6 +18,7 @@
 | 日期 | 版本 | 修改人 | 修改内容 |
 | --- | --- | --- | --- |
 | 2026-09-11 | V1.0 | 前端架构组 | 首版发布，覆盖全部章节及 AI 智能体前端专项规范 |
+| 2026-09-17 | V1.1 | 前端架构组 | 对齐 PRD V1.3/V1.4：DIR-01 增加 `knowledge-base`（P09）；P10/C06 归入 `src/components/`；STATE-02 增加 `useKnowledgeBaseStore`；TS-04 补充 `HitSnippet`；SEC-05 管理后台路由含 P09；AGENT-03 明确知识库类来源可点开 C06 |
 
 ---
 
@@ -55,7 +56,7 @@
 src/
 ├── api/            # 接口请求函数，按业务模块分文件，如 api/qa.ts、api/user.ts
 ├── assets/         # 静态资源（图片、字体），不含可复用样式变量
-├── components/     # 全局通用组件（跨 ≥2 个业务模块复用）
+├── components/     # 全局通用组件（跨 ≥2 个业务模块复用；含 G01/G02 与 P10/C06 答案来源详情）
 ├── composables/    # 全局可复用组合式函数（use 前缀）
 ├── features/       # 按业务模块划分的功能目录，模块内自带 components/composables/types
 │   ├── auth/               # 对应 P01 登录页
@@ -65,6 +66,7 @@ src/
 │   ├── audit-log/          # 对应 P05 操作记录
 │   ├── dashboard/          # 对应 P06 统计看板
 │   ├── query-log/          # 对应 P07-01/P07-02
+│   ├── knowledge-base/     # 对应 P09-01/P09-02 知识库管理（仅管理员）
 │   └── account/            # 对应 P08 修改密码
 ├── router/         # 路由定义与路由守卫
 ├── stores/         # Pinia store，按领域划分（见 §6）
@@ -75,11 +77,13 @@ src/
 ```
 
 - **判定标准**：`src/` 下不存在未列出的顶级目录；`features/*` 子目录名与页面架构总览模块一一对应。
+- P10（C06）答案来源详情弹窗由 P02 / P03-02 / P07-02 共用，必须放在 `src/components/`（如 `AnswerSourceDetailDialog.vue`），**禁止**放入 `features/knowledge-base/`，**禁止**在三个 features 内各写一份（DIR-02）。
+- `features/knowledge-base/` 只承载管理员维护（上传、文件列表、处理状态），不承接答案来源点击（PRD 5.3.5）。
 
 ### DIR-02（MUST）业务组件、逻辑、类型、样式必须归属唯一 `features/<module>`，禁止跨模块目录相互 deep import
 
-- **反例**：`features/qa-history` 中出现 `import X from '@/features/agent-chat/components/MessageBubble.vue'`。
-- **正例**：将 `MessageBubble.vue` 提升到 `src/components/`（全局通用组件目录）后被两个模块引用。
+- **反例**：`features/qa-history` 中出现 `import X from '@/features/agent-chat/components/MessageBubble.vue'`；或把 C06 写进 `features/knowledge-base/` 再被问答模块引用。
+- **正例**：将 `MessageBubble.vue` 提升到 `src/components/`（全局通用组件目录）后被两个模块引用；P10/C06 `AnswerSourceDetailDialog.vue` 同样放在 `src/components/`，由 agent-chat / qa-history / query-log 引用。
 - **校验方式**：ESLint `import/no-restricted-paths` 规则，禁止 `features/*` 互相引用私有路径。
 
 ### DIR-03（MUST）路径引用统一使用别名 `@/`，禁止 `../../../` 三级以上相对路径
@@ -155,7 +159,7 @@ src/
 
 ### TS-04（MUST）领域模型对应的前端类型必须与 `docs/prd/02-领域模型.md` 中定义的聚合/值对象字段一致命名，新增字段须在 PR 中注明来源 PRD 章节
 
-- **判定标准**：`src/types/qa.ts` 中 `QaSession`、`QaInteraction`、`SourceReference`、`CompressedContext` 字段名与领域模型文档章节 2/3 定义逐项对照，缺失或新增字段需在 PR 描述标注对应 PRD 编号。
+- **判定标准**：`src/types/qa.ts` 中 `QaSession`、`QaInteraction`、`SourceReference`（含 `kind`、`locator`，知识库类另含 `documentName`、`hitSnippet`）、`HitSnippet`、`CompressedContext` 字段名与领域模型文档章节 2/3 定义逐项对照；知识库文件类型（如 `KnowledgeDocument`）与领域模型 3.4 对照。缺失或新增字段需在 PR 描述标注对应 PRD 编号。
 
 ### TS-05（SHOULD）优先使用联合类型字面量代替 `enum`，枚举值需要在多处引用时改用 `as const` 对象
 
@@ -236,7 +240,7 @@ export interface ApiResponse<T> {
 
 ### STATE-02（MUST）Store 按领域聚合划分，禁止建立无边界的 `useGlobalStore` 大杂烩
 
-固定 Store 清单（可增不可合并）：`useAuthStore`（`UserAccount`/token）、`useAgentChatStore`（`QaSession`/`QaInteraction`/流式状态）、`useQaHistoryStore`、`useUserManagementStore`、`useDashboardStore`、`useQueryLogStore`。
+固定 Store 清单（可增不可合并）：`useAuthStore`（`UserAccount`/token）、`useAgentChatStore`（`QaSession`/`QaInteraction`/流式状态）、`useQaHistoryStore`、`useUserManagementStore`、`useDashboardStore`、`useQueryLogStore`、`useKnowledgeBaseStore`（`KnowledgeDocument` 列表/上传/处理状态）。C06 读取的是问答/查询留痕上的 `SourceReference` 快照，**禁止**为此单独建 Store，也**禁止**让 C06 去查 `useKnowledgeBaseStore`。
 
 - **校验方式**：`stores/` 目录文件数与业务模块数比对；新增 Store 文件在 PR 中说明对应领域聚合。
 
@@ -417,7 +421,7 @@ const response = await fetch('/api/qa/ask', {
 
 - **校验方式**：ESLint 规则 `no-console`（生产环境 CI 配置下 `error` 级别，仅 `console.error`/`console.warn` 白名单）。
 
-### SEC-05（MUST）路由守卫必须对管理后台相关路由（P04-01/P05/P06/P07-01/P07-02）校验当前用户角色为管理员，前端路由守卫仅作为体验层拦截，最终数据访问权限必须以后端接口鉴权结果为准，禁止仅靠前端路由隐藏来"保护"数据
+### SEC-05（MUST）路由守卫必须对管理后台相关路由（P04-01/P05/P06/P07-01/P07-02/P09-01/P09-02）校验当前用户角色为管理员，前端路由守卫仅作为体验层拦截，最终数据访问权限必须以后端接口鉴权结果为准，禁止仅靠前端路由隐藏来"保护"数据。P10/C06 不是管理后台路由：普通用户与管理员均可打开，但仅能查看其当前已可见那条答案上的知识库类来源快照。
 
 - **判定标准**：`router/index.ts` 中管理后台相关路由存在 `meta.roles: ['admin']` 且全局 `beforeEach` 校验；对应 API 请求不因前端校验通过而省略后端 401/403 处理分支。
 
@@ -466,7 +470,7 @@ const response = await fetch('/api/qa/ask', {
 
 ---
 
-## 15. AI 智能体前端专项规范（对话交互页面：P02 问答平台 / P03-01/02 历史记录）
+## 15. AI 智能体前端专项规范（对话交互页面：P02 问答平台 / P03-01/02 历史记录；来源追溯：P10/C06）
 
 > 本章为在 §9（SSE 流式）、§10（错误处理）、§12（安全）通用规则基础上，针对 Agent 对话交互体验的专项加强规则，冲突时以本章更严格的规则为准。
 
@@ -487,10 +491,11 @@ export interface QaMessageVo {
 
 ### AGENT-02（MUST）消息渲染管线固定为：`原始增量文本 → 按 §9 SSE-03/04 分帧拼接 → marked 解析 Markdown → DOMPurify 净化 → v-html 渲染`，四步骤禁止跳过或调换顺序
 
-### AGENT-03（MUST）来源引用（`SourceReference`）仅允许在 `status === 'done'` 且后端明确返回来源数据时渲染；`status === 'error'` 或来源列表为空时必须隐藏来源区块，禁止渲染占位符/示例来源（对齐 PRD 9.3.14）
+### AGENT-03（MUST）来源引用（`SourceReference`）仅允许在 `status === 'done'` 且后端明确返回来源数据时渲染；`status === 'error'` 或来源列表为空时必须隐藏来源区块，禁止渲染占位符/示例来源（对齐 PRD 9.3.14、5.3.5）
 
-- **反例**：来源为空时展示"来源：文档库"兜底文案。
-- **正例**：来源为空时来源区块整体 `v-if` 为 `false`。
+- **反例**：来源为空时展示"来源：文档库"兜底文案；知识库类来源点击跳进 P09 知识库管理；订单类来源也可点击；在 P03-01/P07-01 列表上把来源当作 C06 入口。
+- **正例**：来源为空时来源区块整体 `v-if` 为 `false`。知识库类来源（`kind` 为知识库文档）在 P02 / P03-02 / P07-02 以可点击链接呈现，点击打开全局组件 C06（P10），只读展示 `documentName`、`locator`、`HitSnippet.content`；关闭后回到触发页。订单类来源仅展示查单说明、不可点击。列表页（P03-01 / P07-01）来源路径为文字，不打开 C06。
+- **判定标准**：C06 只读取该条答案上的来源快照，不调用知识库文件列表 API、不 `import` `features/knowledge-base`。
 
 ### AGENT-04（MUST）Loading/状态机必须严格按以下有限状态实现，禁止新增未定义状态或用多个布尔值组合模拟状态机
 

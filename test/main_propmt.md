@@ -14,8 +14,7 @@
 | --- | --- | --- |
 | Vue3前端任务拆解专家 | `agent4-vue-task-splitter` | 1 次 |
 | Vue前端工程师 | `agent5-vue-engineer` | T00 一次 + 每个功能任务一次 |
-| Vue代码审查与优化专家 | `agent6-vue-reviewer` | 1 次（全部功能任务成功后） |
-| Vue3测试与修复专家 | `agent7-vue-tester` | 1 次（审查完成后） |
+| Vue3审核测试与修复专家 | `agent6-vue-qa` | 1 次（全部功能任务成功后：审核、测试、修复、验证） |
 
 ## 输入（原样交给拆解专家）
 
@@ -46,7 +45,7 @@
 
 ```markdown
 ## YYYY-MM-DD HH:mm
-- 事件：开始调用 agent4 / T00 完成 / 第2批并行启动 / 审查 Block 数 …
+- 事件：开始调用 agent4 / T00 完成 / 第2批并行启动 / 审核测试完成 …
 - 信息：关键路径、报错摘要、回执 status
 ```
 
@@ -86,19 +85,15 @@
 
 一批全部返回后再开下一批。每返回一个回执：立刻更新 `plan_task.md`，重要结果追加 `notes.md`。
 
-某任务 `failed/blocked`：记日志，**不要**让其它已成功任务回滚；本批其余任务仍等齐。全部功能任务结束后，若存在 failed/blocked：先向用户说明风险，再决定是否仍进入审查（默认：仅当 T00 成功且至少有一个功能任务 success 时继续审查）。
+某任务 `failed/blocked`：记日志，**不要**让其它已成功任务回滚；本批其余任务仍等齐。全部功能任务结束后，若存在 failed/blocked：先向用户说明风险，再决定是否仍进入收口（默认：仅当 T00 成功且至少有一个功能任务 success 时继续调用 agent6）。
 
-### 4. 审查与修复
+### 4. 审核、测试、修复、验证
 
-调用一次 `agent6-vue-reviewer`，传入 project-name、报告路径、PRD 路径。等待返回。更新日志（Block 数、报告路径）。
+调用一次 `agent6-vue-qa`，传入 project-name、报告路径、PRD 路径。等待返回。把 Block 数、install/typecheck/build/dev/可体验、报告与 README 路径写入两份日志。
 
-### 5. 编译、修复、启动
+### 5. 向用户汇报
 
-调用一次 `agent7-vue-tester`，传入 project-name。等待返回。把 install/typecheck/build/dev/可体验 结果写入两份日志。
-
-### 6. 向用户汇报
-
-简要给出：项目目录、如何启动、Mock 账号（来自 README 或测试回执）、失败任务、残留问题。不要贴大段代码。
+简要给出：项目目录、如何启动、Mock 账号（来自 README 或审核测试回执）、失败任务、残留问题。不要贴大段代码。
 
 ## 硬规则
 
