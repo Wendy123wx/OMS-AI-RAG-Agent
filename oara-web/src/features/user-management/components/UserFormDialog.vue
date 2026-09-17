@@ -1,0 +1,210 @@
+<script setup lang="ts">
+// P04-03（C02）新增/编辑用户弹窗（T05）：同一组件按 mode 区分字段可编辑性（PRD 6.1）
+import { computed, reactive, ref, watch } from 'vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+
+import { useUserManagementStore } from '@/stores'
+import type { UserAccountVo } from '@/types/user'
+
+interface Props {
+  modelValue: boolean
+  mode: 'create' | 'edit'
+  user: UserAccountVo | null
+}
+
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+  (e: 'submitted'): void
+}>()
+
+const store = useUserManagementStore()
+
+const visible = computed({
+  get: () => props.modelValue,
+  set: (value: boolean) => emit('update:modelValue', value),
+})
+
+const dialogTitle = computed(() => (props.mode === 'create' ? '新增用户' : '编辑用户'))
+const isCreateMode = computed(() => props.mode === 'create')
+
+interface UserFormModel {
+  username: string
+  email: string
+  avatar: string
+  initialPassword: string
+}
+
+const formRef = ref<FormInstance>()
+const isSubmitting = ref(false)
+const formModel = reactive<UserFormModel>({
+  username: '',
+  email: '',
+  avatar: '',
+  initialPassword: '',
+})
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const URL_PATTERN = /^https?:\/\/\S+$/
+
+function validateUsernameUnique(
+  _rule: unknown,
+  value: string,
+  callback: (error?: Error) => void,
+): void {
+  if (!isCreateMode.value) {
+    callback()
+    return
+  }
+  const trimmed = value?.trim() ?? ''
+  const exists = store.users.some((item) => item.username === trimmed)
+  if (trimmed && exists) {
+    callback(new Error('用户名已存在，请更换后重试'))
+    return
+  }
+  callback()
+}
+
+function validateEmailFormat(
+  _rule: unknown,
+  value: string,
+  callback: (error?: Error) => void,
+): void {
+  if (value && !EMAIL_PATTERN.test(value)) {
+    callback(new Error('邮箱格式不正确'))
+    return
+  }
+  callback()
+}
+
+function validateAvatarUrl(
+  _rule: unknown,
+  value: string,
+  callback: (error?: Error) => void,
+): void {
+  if (value && !URL_PATTERN.test(value)) {
+    callback(new Error('请输入以 http(s):// 开头的头像地址'))
+    return
+  }
+  callback()
+}
+
+const formRules: FormRules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { validator: validateUsernameUnique, trigger: 'blur' },
+  ],
+  email: [{ validator: validateEmailFormat, trigger: 'blur' }],
+  avatar: [{ validator: validateAvatarUrl, trigger: 'blur' }],
+  initialPassword: [
+    { required: true, message: '请输入初始密码', trigger: 'blur' },
+    { min: 8, message: '初始密码长度不少于8位', trigger: 'blur' },
+  ],
+}
+
+watch(
+  () => props.modelValue,
+  (isVisible) => {
+    if (!isVisible) {
+      return
+    }
+    formModel.username = props.mode === 'edit' ? props.user?.username ?? '' : ''
+    formModel.email = props.user?.email ?? ''
+    formModel.avatar = props.user?.avatar ?? ''
+    formModel.initialPassword = ''
+    formRef.value?.clearValidate()
+  },
+)
+
+async function handleSubmit(): Promise<void> {
+  const form = formRef.value
+  if (!form) {
+    return
+  }
+  const isValid = await form.validate().catch(() => false)
+  if (!isValid) {
+    return
+  }
+  isSubmitting.value = true
+  try {
+    if (props.mode === 'create') {
+      await store.createUser({
+        username: formModel.username.trim(),
+        email: formModel.email.trim() || undefined,
+        avatar: formModel.avatar.trim() || undefined,
+        initialPassword: formModel.initialPassword,
+      })
+      ElMessage.success('新增用户成功')
+    } else if (props.user) {
+      await store.updateUser(props.user.accountId, {
+        email: formModel.email.trim() || undefined,
+        avatar: formModel.avatar.trim() || undefined,
+      })
+      ElMessage.success('保存成功')
+    }
+    visible.value = false
+    emit('submitted')
+  } catch (error) {
+    ElMessage.error(error instanceof Error && error.message ? error.message : '提交失败，请稍后重试')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+function handleCancel(): void {
+  visible.value = false
+}
+</script>
+
+<template>
+  <el-dialog
+    v-model="visible"
+    :title="dialogTitle"
+    width="480px"
+    class="user-form-dialog"
+    :close-on-click-modal="false"
+  >
+    <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="90px">
+      <el-form-item label="用户名" prop="username">
+        <el-input
+          v-model="formModel.username"
+          :disabled="!isCreateMode"
+          placeholder="请输入登录用户名"
+          maxlength="32"
+        />
+      </el-form-item>
+      <el-form-item label="用户邮箱" prop="email">
+        <el-input v-model="formModel.email" placeholder="选填" maxlength="64" />
+      </el-form-item>
+      <el-form-item label="用户头像" prop="avatar">
+        <el-input
+          v-model="formModel.avatar"
+          placeholder="选填，头像图片地址（URL）"
+          maxlength="256"
+        />
+      </el-form-item>
+      <el-form-item v-if="isCreateMode" label="初始密码" prop="initialPassword">
+        <el-input
+          v-model="formModel.initialPassword"
+          type="text"
+          autocomplete="new-password"
+          placeholder="至少8位，创建后用户可直接登录"
+          maxlength="32"
+        />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button class="user-form-dialog__cancel" @click="handleCancel">取消</el-button>
+      <el-button type="primary" :loading="isSubmitting" @click="handleSubmit">确定</el-button>
+    </template>
+  </el-dialog>
+</template>
+
+<style scoped lang="scss">
+.user-form-dialog {
+  &__cancel {
+    margin-right: var(--space-sm);
+  }
+}
+</style>
