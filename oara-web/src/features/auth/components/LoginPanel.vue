@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // P01 账号密码登录面板（T02）：账号密码 Tab 内容区，由 LoginShellView（T01）承载 Tab 结构
+import { Lock, User } from '@element-plus/icons-vue'
+
 import { useLogin } from '../composables/useLogin'
 
 const { username, password, isSubmitting, errorMessage, submit } = useLogin()
@@ -21,7 +23,11 @@ function handleSubmit(): void {
           placeholder="请输入账号"
           autocomplete="username"
           :disabled="isSubmitting"
-        />
+        >
+          <template #prefix>
+            <el-icon><User /></el-icon>
+          </template>
+        </el-input>
       </div>
       <div class="login-panel__field">
         <label class="login-panel__label" for="login-panel-password">密码</label>
@@ -34,7 +40,11 @@ function handleSubmit(): void {
           autocomplete="current-password"
           show-password
           :disabled="isSubmitting"
-        />
+        >
+          <template #prefix>
+            <el-icon><Lock /></el-icon>
+          </template>
+        </el-input>
       </div>
       <p v-if="errorMessage" class="login-panel__error" role="alert">{{ errorMessage }}</p>
       <el-button

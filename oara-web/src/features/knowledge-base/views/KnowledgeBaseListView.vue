@@ -3,6 +3,7 @@
 // 仅承接列表查看与上传入口，不承接任何“答案来源点击”入口（不引用 C06，见 AGENT-03 反例说明）
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Upload } from '@element-plus/icons-vue'
 
 import MessageDialog from '@/components/MessageDialog.vue'
 import KnowledgeUploadDialog from '../components/KnowledgeUploadDialog.vue'
@@ -123,7 +124,12 @@ onUnmounted(() => {
   <div class="knowledge-base-list-view">
     <div class="knowledge-base-list-view__header">
       <h2 class="knowledge-base-list-view__title">知识库管理</h2>
-      <el-button type="primary" class="knowledge-base-list-view__upload-entry" @click="handleOpenUpload">
+      <el-button
+        type="primary"
+        class="knowledge-base-list-view__upload-entry"
+        :icon="Upload"
+        @click="handleOpenUpload"
+      >
         上传文件
       </el-button>
     </div>
@@ -209,6 +215,7 @@ onUnmounted(() => {
     padding: var(--space-md);
     background-color: var(--color-bg-card);
     border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
   }
 
   &__no-action {

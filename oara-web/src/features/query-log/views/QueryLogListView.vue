@@ -2,6 +2,7 @@
 // P07-01 查询记录列表页（管理员全量视角，PRD 09）
 import { computed, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Search } from '@element-plus/icons-vue'
 
 import HotKeywordPanel from '../components/HotKeywordPanel.vue'
 import QueryLogDetailDialog from '../components/QueryLogDetailDialog.vue'
@@ -84,7 +85,11 @@ onMounted(() => {
         clearable
         class="query-log-list-view__search-input"
         @update:model-value="handleSearchInput"
-      />
+      >
+        <template #prefix>
+          <el-icon><Search /></el-icon>
+        </template>
+      </el-input>
     </div>
 
     <div v-loading="isLoading" class="query-log-list-view__table">
@@ -148,6 +153,7 @@ onMounted(() => {
     background-color: var(--color-bg-card);
     border-radius: var(--radius-md);
     padding: var(--space-md);
+    box-shadow: var(--shadow-sm);
   }
 
   &__source-empty {

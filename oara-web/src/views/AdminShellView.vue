@@ -2,6 +2,7 @@
 // 管理后台壳层：顶栏「返回工作台」+ 左侧菜单四项 + 头像下拉（集成契约 §3.5）
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { ArrowLeft, Folder, Lock, Search, SwitchButton, TrendCharts, User } from '@element-plus/icons-vue'
 
 import { ChangePasswordDialog } from '@/features/account'
 import { useAuthStore } from '@/stores/auth'
@@ -43,7 +44,8 @@ async function handleLogout(): Promise<void> {
       <h1 class="admin-shell__title">管理后台</h1>
       <div class="admin-shell__header-actions">
         <el-button class="admin-shell__back" text @click="handleBackToWorkbench">
-          ← 返回工作台
+          <el-icon><ArrowLeft /></el-icon>
+          返回工作台
         </el-button>
         <el-dropdown class="admin-shell__user" trigger="click" @command="handleDropdownCommand">
           <span class="admin-shell__user-trigger">
@@ -52,8 +54,14 @@ async function handleLogout(): Promise<void> {
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="changePassword">修改密码</el-dropdown-item>
-              <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+              <el-dropdown-item command="changePassword">
+                <el-icon><Lock /></el-icon>
+                修改密码
+              </el-dropdown-item>
+              <el-dropdown-item command="logout" divided>
+                <el-icon><SwitchButton /></el-icon>
+                退出登录
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -61,10 +69,20 @@ async function handleLogout(): Promise<void> {
     </header>
     <div class="admin-shell__body">
       <nav class="admin-shell__menu">
-        <router-link class="admin-shell__menu-item" to="/admin/users">用户管理</router-link>
-        <router-link class="admin-shell__menu-item" to="/admin/dashboard">统计看板</router-link>
-        <router-link class="admin-shell__menu-item" to="/admin/query-logs">查询记录</router-link>
+        <router-link class="admin-shell__menu-item" to="/admin/users">
+          <el-icon><User /></el-icon>
+          用户管理
+        </router-link>
+        <router-link class="admin-shell__menu-item" to="/admin/dashboard">
+          <el-icon><TrendCharts /></el-icon>
+          统计看板
+        </router-link>
+        <router-link class="admin-shell__menu-item" to="/admin/query-logs">
+          <el-icon><Search /></el-icon>
+          查询记录
+        </router-link>
         <router-link class="admin-shell__menu-item" to="/admin/knowledge-base">
+          <el-icon><Folder /></el-icon>
           知识库管理
         </router-link>
       </nav>
@@ -77,6 +95,8 @@ async function handleLogout(): Promise<void> {
 </template>
 
 <style scoped lang="scss">
+@use '../styles/mixins';
+
 .admin-shell {
   display: flex;
   flex-direction: column;
@@ -88,6 +108,7 @@ async function handleLogout(): Promise<void> {
     justify-content: space-between;
     padding: var(--space-md);
     border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
   }
 
   &__title {
@@ -100,6 +121,12 @@ async function handleLogout(): Promise<void> {
     display: flex;
     align-items: center;
     gap: var(--space-lg);
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
   }
 
   &__user {
@@ -132,15 +159,30 @@ async function handleLogout(): Promise<void> {
     flex-direction: column;
     width: 200px;
     padding: var(--space-md);
+    background-color: var(--color-bg-card);
     border-right: 1px solid var(--color-border);
   }
 
   &__menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
     padding: var(--space-sm) var(--space-md);
     margin-bottom: var(--space-xs);
     color: var(--color-text-secondary);
     text-decoration: none;
+    border-left: 3px solid transparent;
     border-radius: var(--radius-sm);
+    transition:
+      border-color var(--transition-base) var(--ease-standard),
+      background-color var(--transition-base) var(--ease-standard),
+      color var(--transition-base) var(--ease-standard);
+
+    @include mixins.focus-ring;
+
+    .el-icon {
+      font-size: var(--icon-size-md);
+    }
 
     &:hover {
       color: var(--color-primary);
@@ -151,6 +193,7 @@ async function handleLogout(): Promise<void> {
       color: var(--color-primary);
       font-weight: 600;
       background-color: var(--color-bg-page);
+      border-left-color: var(--color-primary);
     }
   }
 

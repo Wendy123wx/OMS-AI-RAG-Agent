@@ -56,6 +56,7 @@ onMounted(() => {
     background-color: var(--color-bg-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
   }
 
   &__trend-title {

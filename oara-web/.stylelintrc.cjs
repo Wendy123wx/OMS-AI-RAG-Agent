@@ -3,8 +3,15 @@ module.exports = {
   extends: ['stylelint-config-standard-scss', 'stylelint-config-recommended-vue'],
   overrides: [
     {
+      // stylelint-config-recommended-vue 内部 extends stylelint-config-recommended，
+      // 会在 extends 顺序中覆盖 standard-scss 对 at-rule-no-unknown 的关闭，
+      // 需在 .vue 文件中显式改回 SCSS 感知版本，否则 @use/@include 会被误判为未知规则
       files: ['**/*.vue'],
       customSyntax: 'postcss-html',
+      rules: {
+        'at-rule-no-unknown': null,
+        'scss/at-rule-no-unknown': true,
+      },
     },
     {
       // 设计变量源文件本身允许定义十六进制颜色字面量，供其余文件通过变量引用（STYLE-05 约束的是使用方而非定义方）

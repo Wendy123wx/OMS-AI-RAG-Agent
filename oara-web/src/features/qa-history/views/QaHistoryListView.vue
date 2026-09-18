@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // P03-01 历史记录列表页：展示当前登录用户本人的历史问答记录（PRD 9.4.15）。
 import { computed, onMounted, ref } from 'vue'
+import { ChatLineRound } from '@element-plus/icons-vue'
 
 import { useQaHistoryStore } from '@/stores/qaHistory'
 import QaHistoryDetailDialog from '../components/QaHistoryDetailDialog.vue'
@@ -69,6 +70,7 @@ function openDetail(recordId: string): void {
     <template v-else>
       <ul class="qa-history-list-view__list">
         <li v-for="record in pagedRecords" :key="record.recordId" class="qa-history-list-view__item">
+          <el-icon class="qa-history-list-view__item-icon" :size="18"><ChatLineRound /></el-icon>
           <div class="qa-history-list-view__item-main">
             <p class="qa-history-list-view__question">{{ record.questionSummary }}</p>
             <div class="qa-history-list-view__meta">
@@ -132,6 +134,20 @@ function openDetail(recordId: string): void {
     background-color: var(--color-bg-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition:
+      box-shadow var(--transition-base) var(--ease-standard),
+      border-color var(--transition-base) var(--ease-standard);
+
+    &:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary-light);
+    }
+  }
+
+  &__item-icon {
+    flex-shrink: 0;
+    color: var(--color-text-placeholder);
   }
 
   &__item-main {

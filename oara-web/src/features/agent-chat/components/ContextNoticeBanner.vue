@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // AGENT-10：上下文压缩/重置提示，role === 'system-notice' 消息的可感知呈现，
 // 禁止静默清空前端消息列表。
+import { InfoFilled } from '@element-plus/icons-vue'
+
 interface Props {
   content: string
 }
@@ -10,7 +12,7 @@ defineProps<Props>()
 
 <template>
   <div class="context-notice-banner">
-    <span class="context-notice-banner__icon">i</span>
+    <span class="context-notice-banner__icon"><el-icon :size="12"><InfoFilled /></el-icon></span>
     <span class="context-notice-banner__text">{{ content }}</span>
   </div>
 </template>
@@ -36,7 +38,6 @@ defineProps<Props>()
     width: 16px;
     height: 16px;
     color: var(--color-bg-card);
-    font-style: normal;
     background-color: var(--color-info);
     border-radius: 50%;
   }

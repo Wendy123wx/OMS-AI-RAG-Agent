@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // P02 问答平台页：回答区域 + 提问区域 + 新建会话 + 答案来源详情弹窗入口（全局 C06）。
 import { ref } from 'vue'
+import { Plus } from '@element-plus/icons-vue'
 
 // AGENT-03：知识库类来源点击必须打开全局唯一 C06，禁止在本模块内自建同类弹窗（DIR-01/DIR-02）
 import AnswerSourceDetailDialog from '@/components/AnswerSourceDetailDialog.vue'
@@ -33,7 +34,7 @@ async function handleNewSession(): Promise<void> {
   <div class="agent-chat-view">
     <div class="agent-chat-view__toolbar">
       <span class="agent-chat-view__toolbar-title">当前会话</span>
-      <el-button size="small" :disabled="isStreaming" @click="handleNewSession">
+      <el-button size="small" :icon="Plus" :disabled="isStreaming" @click="handleNewSession">
         新建会话
       </el-button>
     </div>

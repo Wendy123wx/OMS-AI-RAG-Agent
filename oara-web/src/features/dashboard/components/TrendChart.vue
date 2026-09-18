@@ -108,7 +108,7 @@ const trendBars = computed<TrendBarItem[]>(() =>
     min-height: 2px;
     background-color: var(--color-primary);
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    transition: height 0.2s ease;
+    transition: height var(--transition-base) var(--ease-standard);
   }
 
   &__bar-label {

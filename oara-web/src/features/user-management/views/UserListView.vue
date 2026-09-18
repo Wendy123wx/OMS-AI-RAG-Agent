@@ -3,6 +3,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Clock, Plus } from '@element-plus/icons-vue'
 
 import { useUserManagementStore } from '@/stores'
 import type { UserAccountVo } from '@/types/user'
@@ -131,71 +132,73 @@ function formatDateTime(iso: string): string {
     <div class="user-list-view__toolbar">
       <h2 class="user-list-view__title">用户管理</h2>
       <div class="user-list-view__actions">
-        <el-button class="user-list-view__operation-log" @click="goToOperationLog">
+        <el-button class="user-list-view__operation-log" :icon="Clock" @click="goToOperationLog">
           历史操作
         </el-button>
-        <el-button type="primary" @click="openCreateDialog">新增用户</el-button>
+        <el-button type="primary" :icon="Plus" @click="openCreateDialog">新增用户</el-button>
       </div>
     </div>
 
-    <el-table
-      v-loading="store.isLoading"
-      :data="pagedUsers"
-      class="user-list-view__table"
-      row-key="accountId"
-    >
-      <el-table-column prop="username" label="用户名" min-width="120" />
-      <el-table-column label="头像" width="72">
-        <template #default="{ row }">
-          <el-avatar :size="32" :src="row.avatar || undefined">
-            {{ avatarFallback(row.username) }}
-          </el-avatar>
-        </template>
-      </el-table-column>
-      <el-table-column label="邮箱" min-width="180">
-        <template #default="{ row }">{{ row.email || '—' }}</template>
-      </el-table-column>
-      <el-table-column label="状态" width="100">
-        <template #default="{ row }">
-          <el-tag :type="row.status === 'normal' ? 'success' : 'danger'" size="small">
-            {{ row.status === 'normal' ? '正常' : '已禁用' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" width="160">
-        <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
-      </el-table-column>
-      <el-table-column label="更新时间" width="160">
-        <template #default="{ row }">{{ formatDateTime(row.updatedAt) }}</template>
-      </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
-        <template #default="{ row }">
-          <el-button link type="primary" @click="openEditDialog(row)">编辑</el-button>
-          <el-button
-            link
-            :type="row.status === 'normal' ? 'warning' : 'success'"
-            @click="handleToggleStatus(row)"
-          >
-            {{ row.status === 'normal' ? '禁用' : '恢复' }}
-          </el-button>
-          <el-button link type="danger" @click="openDeleteDialog(row)">删除</el-button>
-        </template>
-      </el-table-column>
+    <div class="user-list-view__table-card">
+      <el-table
+        v-loading="store.isLoading"
+        :data="pagedUsers"
+        class="user-list-view__table"
+        row-key="accountId"
+      >
+        <el-table-column prop="username" label="用户名" min-width="120" />
+        <el-table-column label="头像" width="72">
+          <template #default="{ row }">
+            <el-avatar :size="32" :src="row.avatar || undefined">
+              {{ avatarFallback(row.username) }}
+            </el-avatar>
+          </template>
+        </el-table-column>
+        <el-table-column label="邮箱" min-width="180">
+          <template #default="{ row }">{{ row.email || '—' }}</template>
+        </el-table-column>
+        <el-table-column label="状态" width="100">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 'normal' ? 'success' : 'danger'" size="small">
+              {{ row.status === 'normal' ? '正常' : '已禁用' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" width="160">
+          <template #default="{ row }">{{ formatDateTime(row.createdAt) }}</template>
+        </el-table-column>
+        <el-table-column label="更新时间" width="160">
+          <template #default="{ row }">{{ formatDateTime(row.updatedAt) }}</template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" fixed="right">
+          <template #default="{ row }">
+            <el-button link type="primary" @click="openEditDialog(row)">编辑</el-button>
+            <el-button
+              link
+              :type="row.status === 'normal' ? 'warning' : 'success'"
+              @click="handleToggleStatus(row)"
+            >
+              {{ row.status === 'normal' ? '禁用' : '恢复' }}
+            </el-button>
+            <el-button link type="danger" @click="openDeleteDialog(row)">删除</el-button>
+          </template>
+        </el-table-column>
 
-      <template #empty>
-        <el-empty description="暂无普通用户账号" />
-      </template>
-    </el-table>
+        <template #empty>
+          <el-empty description="暂无普通用户账号" />
+        </template>
+      </el-table>
 
-    <el-pagination
-      v-if="totalCount > 0"
-      class="user-list-view__pagination"
-      layout="prev, pager, next, total"
-      :total="totalCount"
-      :page-size="PAGE_SIZE"
-      :current-page="currentPage"
-      @current-change="handlePageChange"
-    />
+      <el-pagination
+        v-if="totalCount > 0"
+        class="user-list-view__pagination"
+        layout="prev, pager, next, total"
+        :total="totalCount"
+        :page-size="PAGE_SIZE"
+        :current-page="currentPage"
+        @current-change="handlePageChange"
+      />
+    </div>
 
     <UserFormDialog
       v-model="isFormDialogVisible"
@@ -236,9 +239,17 @@ function formatDateTime(iso: string): string {
     gap: var(--space-sm);
   }
 
+  &__table-card {
+    padding: var(--space-md);
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+
   &__pagination {
     display: flex;
     justify-content: flex-end;
+    margin-top: var(--space-md);
   }
 }
 </style>

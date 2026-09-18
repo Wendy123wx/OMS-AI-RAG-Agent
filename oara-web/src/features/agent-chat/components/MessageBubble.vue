@@ -2,6 +2,7 @@
 // 单条问答消息气泡（role: user | assistant）。system-notice 由 MessageList 路由到
 // ContextNoticeBanner，本组件不处理该角色。
 import { computed } from 'vue'
+import { ChatDotRound, UserFilled } from '@element-plus/icons-vue'
 
 import type { QaMessageVo, SourceReference } from '@/types/qa'
 
@@ -26,8 +27,6 @@ const isCancelled = computed(() => props.message.status === 'cancelled')
 const hasSources = computed(
   () => props.message.status === 'done' && props.message.sources.length > 0,
 )
-const avatarLabel = computed(() => (isUserMessage.value ? '我' : 'AI'))
-
 function handleOpenSource(source: SourceReference): void {
   emit('openSource', source)
 }
@@ -41,7 +40,12 @@ function handleOpenSource(source: SourceReference): void {
       'message-bubble--assistant': !isUserMessage,
     }"
   >
-    <div class="message-bubble__avatar">{{ avatarLabel }}</div>
+    <div class="message-bubble__avatar">
+      <el-icon :size="16">
+        <UserFilled v-if="isUserMessage" />
+        <ChatDotRound v-else />
+      </el-icon>
+    </div>
     <div class="message-bubble__panel">
       <!-- SEC-02：用户输入原文回显必须走默认文本插值自动转义，禁止 v-html -->
       <p v-if="isUserMessage" class="message-bubble__user-text">{{ message.content }}</p>
@@ -84,6 +88,7 @@ function handleOpenSource(source: SourceReference): void {
     background-color: var(--color-bg-card);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
   }
 
   &__cancelled {

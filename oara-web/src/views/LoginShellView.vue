@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // 登录页容器（P01）：承载顶栏 Tab 结构，Tab 内容委托 @/features/auth 的 LoginPanel（集成契约 §3.5）
 import { ref } from 'vue'
+import { Grid } from '@element-plus/icons-vue'
 
 import MessageDialog from '@/components/MessageDialog.vue'
 import { LoginPanel } from '@/features/auth'
@@ -24,7 +25,10 @@ function handleTabChange(name: string | number): void {
       <el-tabs v-model="activeTab" class="login-shell__tabs" @tab-change="handleTabChange">
         <el-tab-pane label="钉钉登录" name="dingtalk">
           <div class="login-shell__dingtalk">
-            <div class="login-shell__qr-placeholder">二维码占位区</div>
+            <div class="login-shell__qr-placeholder">
+              <el-icon :size="32"><Grid /></el-icon>
+              <span>二维码占位区</span>
+            </div>
             <p class="login-shell__dingtalk-tip">钉钉扫码登录功能开发中，请使用账号密码登录</p>
           </div>
         </el-tab-pane>
@@ -56,7 +60,7 @@ function handleTabChange(name: string | number): void {
     padding: var(--space-xl);
     background-color: var(--color-bg-card);
     border-radius: var(--radius-lg);
-    box-shadow: 0 2px 12px rgb(0 0 0 / 8%);
+    box-shadow: var(--shadow-lg);
   }
 
   &__title {
@@ -75,8 +79,10 @@ function handleTabChange(name: string | number): void {
 
   &__qr-placeholder {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: var(--space-sm);
     width: 180px;
     height: 180px;
     margin-bottom: var(--space-md);

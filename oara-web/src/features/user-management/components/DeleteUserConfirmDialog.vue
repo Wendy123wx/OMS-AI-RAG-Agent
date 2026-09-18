@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // P04-02（C03）用户删除确认弹窗（T05）：私有化弹窗，展示目标用户信息与不可恢复提示（PRD 5.5.2）
 import { computed } from 'vue'
+import { WarningFilled } from '@element-plus/icons-vue'
 
 import type { UserAccountVo } from '@/types/user'
 
@@ -48,6 +49,7 @@ function handleCancel(): void {
       <span class="delete-user-confirm-dialog__username">{{ props.user?.username ?? '—' }}</span>
     </div>
     <p class="delete-user-confirm-dialog__warning">
+      <el-icon class="delete-user-confirm-dialog__warning-icon"><WarningFilled /></el-icon>
       删除后该账号将无法恢复，也无法再登录系统（提示账号不存在）；该用户此前的查询记录仍会保留在查询记录模块中。
     </p>
     <template #footer>
@@ -81,9 +83,17 @@ function handleCancel(): void {
   }
 
   &__warning {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-xs);
     margin: 0;
     font-size: var(--font-size-sm);
     color: var(--color-danger);
+  }
+
+  &__warning-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
   }
 
   &__cancel {

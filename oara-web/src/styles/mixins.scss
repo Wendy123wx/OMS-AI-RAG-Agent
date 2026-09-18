@@ -37,3 +37,11 @@
   align-items: center;
   justify-content: center;
 }
+
+// 自定义可交互元素的键盘焦点态（Element Plus 组件自带焦点态，无需使用）
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}

@@ -3,6 +3,7 @@
 import { computed, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import type { UploadFile, UploadUserFile } from 'element-plus'
+import { UploadFilled } from '@element-plus/icons-vue'
 
 import { useKnowledgeBaseStore } from '@/stores/knowledgeBase'
 import { AppError } from '@/utils/http'
@@ -145,6 +146,7 @@ function handleCancel(): void {
       @change="handleFileChange"
       @remove="handleFileRemove"
     >
+      <el-icon class="knowledge-upload-dialog__upload-icon" :size="32"><UploadFilled /></el-icon>
       <div class="knowledge-upload-dialog__hint">将文件拖到此处，或<em>点击选择文件</em></div>
     </el-upload>
     <p class="knowledge-upload-dialog__constraint">仅支持 PDF、Word 格式，单个文件不超过 20MB</p>
@@ -179,8 +181,13 @@ function handleCancel(): void {
     width: 100%;
   }
 
+  &__upload-icon {
+    margin-top: var(--space-lg);
+    color: var(--color-text-placeholder);
+  }
+
   &__hint {
-    padding: var(--space-lg) 0;
+    padding: var(--space-sm) 0 var(--space-lg) 0;
     color: var(--color-text-secondary);
     font-size: var(--font-size-sm);
 

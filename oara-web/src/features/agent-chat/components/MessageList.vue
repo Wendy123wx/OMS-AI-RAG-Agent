@@ -3,6 +3,7 @@
 // PERF-03：消息量过大时退化为只渲染最近 200 条，避免一次性渲染全部历史 DOM 节点。
 import { computed, nextTick, ref, watch } from 'vue'
 import type { ScrollbarInstance } from 'element-plus'
+import { ChatDotRound } from '@element-plus/icons-vue'
 
 import type { QaMessageVo, SourceReference } from '@/types/qa'
 
@@ -52,9 +53,10 @@ function handleOpenSource(source: SourceReference): void {
     <p v-if="isTruncated" class="message-list__truncated-notice">
       仅展示最近 {{ MAX_RENDERED_MESSAGES }} 条消息，更早内容请前往「历史记录」查看
     </p>
-    <p v-if="visibleMessages.length === 0" class="message-list__empty">
-      向我提问，开始新的对话
-    </p>
+    <div v-if="visibleMessages.length === 0" class="message-list__empty">
+      <el-icon :size="32" class="message-list__empty-icon"><ChatDotRound /></el-icon>
+      <p class="message-list__empty-text">向我提问，开始新的对话</p>
+    </div>
     <template v-for="message in visibleMessages" :key="message.id">
       <ContextNoticeBanner
         v-if="message.role === 'system-notice'"
@@ -79,10 +81,22 @@ function handleOpenSource(source: SourceReference): void {
   }
 
   &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
     margin-top: var(--space-xl);
     color: var(--color-text-placeholder);
-    font-size: var(--font-size-sm);
     text-align: center;
+  }
+
+  &__empty-icon {
+    color: var(--color-text-placeholder);
+  }
+
+  &__empty-text {
+    margin: 0;
+    font-size: var(--font-size-md);
   }
 }
 </style>

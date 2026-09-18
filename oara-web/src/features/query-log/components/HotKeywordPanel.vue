@@ -27,7 +27,7 @@ const hasKeywords = computed<boolean>(() => props.keywords.length > 0)
 <template>
   <section class="hot-keyword-panel">
     <h3 class="hot-keyword-panel__title">高频搜索词</h3>
-    <p v-if="!hasKeywords" class="hot-keyword-panel__empty">暂无高频搜索词数据</p>
+    <el-empty v-if="!hasKeywords" description="暂无高频搜索词数据" :image-size="60" />
     <div v-else class="hot-keyword-panel__body">
       <ul class="hot-keyword-panel__first-row">
         <li
@@ -58,17 +58,12 @@ const hasKeywords = computed<boolean>(() => props.keywords.length > 0)
   background-color: var(--color-bg-card);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 
   &__title {
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-md);
     color: var(--color-text-primary);
-  }
-
-  &__empty {
-    margin: 0;
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
   }
 
   &__first-row,

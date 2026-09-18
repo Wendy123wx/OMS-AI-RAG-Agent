@@ -4,6 +4,7 @@
 // 页面无编辑/删除入口（验收标准2）。
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { ArrowLeft } from '@element-plus/icons-vue'
 
 import { useAuditLogStore } from '@/stores/auditLog'
 import type { AccountOperationType } from '@/types/account-operation'
@@ -53,36 +54,38 @@ onMounted(async () => {
   <div class="audit-log-list-view">
     <header class="audit-log-list-view__header">
       <h2 class="audit-log-list-view__title">操作记录</h2>
-      <el-button class="audit-log-list-view__back-btn" @click="goBackToUserManagement">
+      <el-button class="audit-log-list-view__back-btn" :icon="ArrowLeft" @click="goBackToUserManagement">
         返回用户管理
       </el-button>
     </header>
 
-    <el-skeleton v-if="isLoading" :rows="5" animated />
+    <div class="audit-log-list-view__card">
+      <el-skeleton v-if="isLoading" :rows="5" animated />
 
-    <el-empty v-else-if="isEmpty" description="暂无操作记录" />
+      <el-empty v-else-if="isEmpty" description="暂无操作记录" />
 
-    <el-table
-      v-else
-      class="audit-log-list-view__table"
-      :data="records"
-      row-key="operationId"
-    >
-      <el-table-column label="操作类型" width="140">
-        <template #default="{ row }">
-          <el-tag :type="getOperationTypeTagType(row.operationType)" size="small">
-            {{ getOperationTypeText(row.operationType) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="目标用户">
-        <template #default="{ row }">
-          {{ row.target.username }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作时间" prop="operatedAt" width="220" />
-      <el-table-column label="操作人" prop="operatorUsername" width="160" />
-    </el-table>
+      <el-table
+        v-else
+        class="audit-log-list-view__table"
+        :data="records"
+        row-key="operationId"
+      >
+        <el-table-column label="操作类型" width="140">
+          <template #default="{ row }">
+            <el-tag :type="getOperationTypeTagType(row.operationType)" size="small">
+              {{ getOperationTypeText(row.operationType) }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="目标用户">
+          <template #default="{ row }">
+            {{ row.target.username }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作时间" prop="operatedAt" width="220" />
+        <el-table-column label="操作人" prop="operatorUsername" width="160" />
+      </el-table>
+    </div>
   </div>
 </template>
 
@@ -98,6 +101,13 @@ onMounted(async () => {
   &__title {
     margin: 0;
     font-size: var(--font-size-lg);
+  }
+
+  &__card {
+    padding: var(--space-md);
+    background-color: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
   }
 
   &__table {

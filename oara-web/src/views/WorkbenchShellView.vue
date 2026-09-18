@@ -2,6 +2,7 @@
 // 问答平台壳层：顶栏标题 + Tab（工作台/历史记录/管理后台）+ 头像下拉（集成契约 §3.5）
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { Lock, SwitchButton } from '@element-plus/icons-vue'
 
 import { ChangePasswordDialog } from '@/features/account'
 import { useAuthStore } from '@/stores/auth'
@@ -66,8 +67,14 @@ async function handleLogout(): Promise<void> {
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="changePassword">修改密码</el-dropdown-item>
-            <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+            <el-dropdown-item command="changePassword">
+              <el-icon><Lock /></el-icon>
+              修改密码
+            </el-dropdown-item>
+            <el-dropdown-item command="logout" divided>
+              <el-icon><SwitchButton /></el-icon>
+              退出登录
+            </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -91,6 +98,7 @@ async function handleLogout(): Promise<void> {
     gap: var(--space-lg);
     padding: 0 var(--space-md);
     border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
   }
 
   &__title {
@@ -101,7 +109,15 @@ async function handleLogout(): Promise<void> {
   }
 
   &__tabs {
-    flex: 1;
+    flex: 0 0 auto;
+
+    :deep(.el-tabs__header) {
+      margin: 0;
+    }
+
+    :deep(.el-tabs__nav-wrap::after) {
+      display: none;
+    }
   }
 
   &__user {

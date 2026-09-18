@@ -2,6 +2,7 @@
 // 提问区域：问题输入框、发送、发送前取消、生成中终止。
 // AGENT-09.1：streaming/pending 期间输入框与发送按钮必须禁用，不做排队等待自动发送设计。
 import { computed, ref } from 'vue'
+import { Close, CircleClose, Promotion } from '@element-plus/icons-vue'
 
 const MAX_QUESTION_LENGTH = 2000
 
@@ -69,14 +70,15 @@ function handleKeydown(event: KeyboardEvent): void {
       <el-button
         v-if="hasDraftText && !isStreaming"
         class="question-input__cancel"
+        :icon="Close"
         @click="handleCancelBeforeSend"
       >
         取消
       </el-button>
-      <el-button v-if="isStreaming" type="warning" @click="handleStopGeneration">
+      <el-button v-if="isStreaming" type="warning" :icon="CircleClose" @click="handleStopGeneration">
         终止生成
       </el-button>
-      <el-button v-else type="primary" :disabled="isSendDisabled" @click="handleSend">
+      <el-button v-else type="primary" :icon="Promotion" :disabled="isSendDisabled" @click="handleSend">
         发送
       </el-button>
     </div>
