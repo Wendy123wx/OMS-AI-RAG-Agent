@@ -1,0 +1,47 @@
+// 全局 SCSS mixin
+@use 'variables' as v;
+
+// STYLE-06：响应式断点固定 sm/md/lg，通过 mixin 使用，禁止裸写 @media 魔法数值
+@mixin respond($breakpoint) {
+  @if $breakpoint == sm {
+    @media (min-width: v.$breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (min-width: v.$breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (min-width: v.$breakpoint-lg) {
+      @content;
+    }
+  }
+}
+
+@mixin ellipsis($lines: 1) {
+  @if $lines == 1 {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  } @else {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $lines;
+  }
+}
+
+@mixin flex-center($direction: row) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: center;
+  justify-content: center;
+}
+
+// 自定义可交互元素的键盘焦点态（Element Plus 组件自带焦点态，无需使用）
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}

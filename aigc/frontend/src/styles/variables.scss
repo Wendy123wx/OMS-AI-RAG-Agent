@@ -1,0 +1,95 @@
+// 全局设计变量（STYLE-05：颜色/间距/字号统一从本文件引用，禁止硬编码）
+
+// 颜色
+$color-primary: #1a73e8;
+$color-primary-light: #4d94ff;
+$color-success: #22a55c;
+$color-warning: #e6a23c;
+$color-danger: #d9363e;
+$color-info: #909399;
+$color-text-primary: #1f2329;
+$color-text-secondary: #5f6368;
+$color-text-placeholder: #9aa0a6;
+$color-bg-page: #f5f6f8;
+$color-bg-card: #fff;
+$color-border: #e4e7ed;
+
+// 间距
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 16px;
+$space-lg: 24px;
+$space-xl: 32px;
+
+// 字号
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-md: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 24px;
+
+// 圆角
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+
+// 阴影
+$shadow-sm: 0 1px 2px rgb(0 0 0 / 6%);
+$shadow-md: 0 2px 8px rgb(0 0 0 / 10%);
+$shadow-lg: 0 4px 16px rgb(0 0 0 / 12%);
+
+// 过渡
+$transition-fast: 120ms;
+$transition-base: 200ms;
+$transition-slow: 320ms;
+$ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+// 图标尺寸
+$icon-size-sm: 14px;
+$icon-size-md: 16px;
+$icon-size-lg: 20px;
+$icon-size-xl: 32px;
+
+// 断点（STYLE-06）
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1440px;
+
+:root {
+  --color-primary: #{$color-primary};
+  --color-primary-light: #{$color-primary-light};
+  --color-success: #{$color-success};
+  --color-warning: #{$color-warning};
+  --color-danger: #{$color-danger};
+  --color-info: #{$color-info};
+  --color-text-primary: #{$color-text-primary};
+  --color-text-secondary: #{$color-text-secondary};
+  --color-text-placeholder: #{$color-text-placeholder};
+  --color-bg-page: #{$color-bg-page};
+  --color-bg-card: #{$color-bg-card};
+  --color-border: #{$color-border};
+  --space-xs: #{$space-xs};
+  --space-sm: #{$space-sm};
+  --space-md: #{$space-md};
+  --space-lg: #{$space-lg};
+  --space-xl: #{$space-xl};
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-md: #{$font-size-md};
+  --font-size-lg: #{$font-size-lg};
+  --font-size-xl: #{$font-size-xl};
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+  --shadow-sm: #{$shadow-sm};
+  --shadow-md: #{$shadow-md};
+  --shadow-lg: #{$shadow-lg};
+  --transition-fast: #{$transition-fast};
+  --transition-base: #{$transition-base};
+  --transition-slow: #{$transition-slow};
+  --ease-standard: #{$ease-standard};
+  --icon-size-sm: #{$icon-size-sm};
+  --icon-size-md: #{$icon-size-md};
+  --icon-size-lg: #{$icon-size-lg};
+  --icon-size-xl: #{$icon-size-xl};
+}
