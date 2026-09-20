@@ -5,6 +5,10 @@ import { setupRouterGuards } from './guards'
 // 路由表按集成契约 §3.1 固定，弹窗（G01/G02/C01~C06/P08）不进入路由表
 export const routes: RouteRecordRaw[] = [
   {
+    path: '/',
+    redirect: '/login',
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginShellView.vue'),

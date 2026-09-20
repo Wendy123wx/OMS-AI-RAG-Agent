@@ -88,11 +88,13 @@ function handleKeydown(event: KeyboardEvent): void {
 <style scoped lang="scss">
 .question-input {
   display: flex;
+  flex-shrink: 0;
   align-items: flex-end;
   gap: var(--space-sm);
   padding: var(--space-md);
   background-color: var(--color-bg-card);
-  border-top: 1px solid var(--color-border);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 
   &__textarea {
     flex: 1;

@@ -100,10 +100,13 @@ async function handleLogout(): Promise<void> {
 .admin-shell {
   display: flex;
   flex-direction: column;
+  height: 100vh;
   min-height: 100vh;
+  overflow: hidden;
 
   &__header {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
     padding: var(--space-md);
@@ -151,11 +154,13 @@ async function handleLogout(): Promise<void> {
 
   &__body {
     display: flex;
-    flex: 1;
+    flex: 1 0 0;
+    min-height: 0;
   }
 
   &__menu {
     display: flex;
+    flex-shrink: 0;
     flex-direction: column;
     width: 200px;
     padding: var(--space-md);
@@ -198,7 +203,10 @@ async function handleLogout(): Promise<void> {
   }
 
   &__content {
-    flex: 1;
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    min-height: 0;
     padding: var(--space-md);
     overflow: auto;
   }

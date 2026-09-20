@@ -487,6 +487,45 @@ export const MOCK_HOT_KEYWORDS: HotKeywordVo[] = [
   { keyword: '会员积分', clickCount: 18, rank: 7, inFirstRow: false },
 ]
 
+const QUERY_SUMMARY_MAX_LENGTH = 30
+
+function truncateQuerySummary(text: string): string {
+  return text.length > QUERY_SUMMARY_MAX_LENGTH
+    ? `${text.slice(0, QUERY_SUMMARY_MAX_LENGTH)}…`
+    : text
+}
+
+export function appendQueryLogRecord(params: {
+  recordId: string
+  askerUsername: string
+  question: string
+  answer: string
+  sources: QueryRecordDetailVo['sources']
+  recordedAt: string
+  resultType: QueryRecordDetailVo['resultType']
+}): void {
+  const sourceLocatorSummary =
+    params.resultType === 'exception' || params.sources.length === 0
+      ? ''
+      : params.sources.map((source) => source.documentName ?? source.locator).join('、')
+
+  MOCK_QUERY_LOG_RECORDS.push({
+    recordId: params.recordId,
+    askerUsername: params.askerUsername,
+    questionSummary: truncateQuerySummary(params.question),
+    recordedAt: params.recordedAt,
+    sourceLocatorSummary,
+  })
+  MOCK_QUERY_LOG_DETAILS[params.recordId] = {
+    recordId: params.recordId,
+    question: params.question,
+    answer: params.answer,
+    sources: params.sources,
+    recordedAt: params.recordedAt,
+    resultType: params.resultType,
+  }
+}
+
 export function registerQueryLogMocks(register: RegisterMockRoute): void {
   register('GET', /\/query-log$/, (config) => {
     const keyword = ((config.params as Record<string, string> | undefined)?.keyword ?? '').trim()

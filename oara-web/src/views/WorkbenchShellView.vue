@@ -80,7 +80,9 @@ async function handleLogout(): Promise<void> {
       </el-dropdown>
     </header>
     <main class="workbench-shell__content">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <component :is="Component" class="workbench-shell__page" />
+      </router-view>
     </main>
     <ChangePasswordDialog v-model="isChangePasswordDialogVisible" />
   </div>
@@ -90,10 +92,13 @@ async function handleLogout(): Promise<void> {
 .workbench-shell {
   display: flex;
   flex-direction: column;
+  height: 100vh;
   min-height: 100vh;
+  overflow: hidden;
 
   &__header {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     gap: var(--space-lg);
     padding: 0 var(--space-md);
@@ -142,8 +147,17 @@ async function handleLogout(): Promise<void> {
   }
 
   &__content {
-    flex: 1;
-    overflow: auto;
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+
+    :deep(.workbench-shell__page) {
+      flex: 1 0 0;
+      min-height: 0;
+      height: 100%;
+    }
   }
 }
 </style>

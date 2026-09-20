@@ -101,7 +101,10 @@ function openDetail(recordId: string): void {
 
 <style scoped lang="scss">
 .qa-history-list-view {
+  height: 100%;
   padding: var(--space-md);
+  overflow: auto;
+  box-sizing: border-box;
 
   &__title {
     margin: 0 0 var(--space-md) 0;

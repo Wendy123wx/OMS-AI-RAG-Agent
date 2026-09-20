@@ -67,7 +67,6 @@ function openEditDialog(user: UserAccountVo): void {
 
 async function handleFormSubmitted(): Promise<void> {
   currentPage.value = 1
-  await loadUsers()
 }
 
 async function handleToggleStatus(user: UserAccountVo): Promise<void> {
@@ -140,12 +139,14 @@ function formatDateTime(iso: string): string {
     </div>
 
     <div class="user-list-view__table-card">
-      <el-table
-        v-loading="store.isLoading"
-        :data="pagedUsers"
-        class="user-list-view__table"
-        row-key="accountId"
-      >
+      <div class="user-list-view__table-wrap">
+        <el-table
+          v-loading="store.isLoading"
+          :data="pagedUsers"
+          class="user-list-view__table"
+          height="100%"
+          row-key="accountId"
+        >
         <el-table-column prop="username" label="用户名" min-width="120" />
         <el-table-column label="头像" width="72">
           <template #default="{ row }">
@@ -188,6 +189,7 @@ function formatDateTime(iso: string): string {
           <el-empty description="暂无普通用户账号" />
         </template>
       </el-table>
+      </div>
 
       <el-pagination
         v-if="totalCount > 0"
@@ -219,11 +221,15 @@ function formatDateTime(iso: string): string {
 <style scoped lang="scss">
 .user-list-view {
   display: flex;
+  flex: 1 0 0;
   flex-direction: column;
   gap: var(--space-md);
+  min-height: 0;
+  height: 100%;
 
   &__toolbar {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
   }
@@ -240,16 +246,31 @@ function formatDateTime(iso: string): string {
   }
 
   &__table-card {
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    min-height: 0;
     padding: var(--space-md);
     background-color: var(--color-bg-card);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
   }
 
+  &__table-wrap {
+    flex: 1 0 0;
+    min-height: 0;
+  }
+
+  &__table {
+    width: 100%;
+  }
+
   &__pagination {
     display: flex;
+    flex-shrink: 0;
     justify-content: flex-end;
-    margin-top: var(--space-md);
+    margin-top: auto;
+    padding-top: var(--space-md);
   }
 }
 </style>

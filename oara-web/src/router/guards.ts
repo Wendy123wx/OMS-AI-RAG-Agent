@@ -22,12 +22,12 @@ export function setupRouterGuards(router: Router): void {
       return true
     }
 
-    if (requiredRoles.length === 0) {
-      return true
-    }
-
     if (!authStore.isAuthenticated) {
       return { name: 'Login' }
+    }
+
+    if (requiredRoles.length === 0) {
+      return true
     }
 
     if (authStore.role && !requiredRoles.includes(authStore.role)) {

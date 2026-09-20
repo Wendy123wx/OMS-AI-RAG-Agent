@@ -3,26 +3,18 @@
 import { ref } from 'vue'
 import { Grid } from '@element-plus/icons-vue'
 
-import MessageDialog from '@/components/MessageDialog.vue'
 import { LoginPanel } from '@/features/auth'
 
 type LoginTab = 'dingtalk' | 'account'
 
 const activeTab = ref<LoginTab>('account')
-const isDingtalkTipVisible = ref(false)
-
-function handleTabChange(name: string | number): void {
-  if (name === 'dingtalk') {
-    isDingtalkTipVisible.value = true
-  }
-}
 </script>
 
 <template>
   <div class="login-shell">
     <div class="login-shell__panel">
       <h1 class="login-shell__title">OMS智能问答系统</h1>
-      <el-tabs v-model="activeTab" class="login-shell__tabs" @tab-change="handleTabChange">
+      <el-tabs v-model="activeTab" class="login-shell__tabs" stretch>
         <el-tab-pane label="钉钉登录" name="dingtalk">
           <div class="login-shell__dingtalk">
             <div class="login-shell__qr-placeholder">
@@ -37,12 +29,6 @@ function handleTabChange(name: string | number): void {
         </el-tab-pane>
       </el-tabs>
     </div>
-    <MessageDialog
-      v-model="isDingtalkTipVisible"
-      title="提示"
-      content="功能开发中"
-      confirm-text="知道了"
-    />
   </div>
 </template>
 
@@ -53,10 +39,15 @@ function handleTabChange(name: string | number): void {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  padding: var(--space-lg);
   background-color: var(--color-bg-page);
 
   &__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 420px;
+    max-width: 100%;
     padding: var(--space-xl);
     background-color: var(--color-bg-card);
     border-radius: var(--radius-lg);
@@ -70,11 +61,33 @@ function handleTabChange(name: string | number): void {
     text-align: center;
   }
 
+  &__tabs {
+    width: 100%;
+
+    :deep(.el-tabs__header) {
+      margin: 0 0 var(--space-lg);
+    }
+
+    :deep(.el-tabs__nav-wrap::after) {
+      display: none;
+    }
+
+    :deep(.el-tabs__content),
+    :deep(.el-tab-pane) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
   &__dingtalk {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 100%;
     padding: var(--space-lg) 0;
+    text-align: center;
   }
 
   &__qr-placeholder {
@@ -96,6 +109,7 @@ function handleTabChange(name: string | number): void {
     margin: 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
+    text-align: center;
   }
 }
 </style>

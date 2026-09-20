@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // P04-03（C02）新增/编辑用户弹窗（T05）：同一组件按 mode 区分字段可编辑性（PRD 6.1）
 import { computed, reactive, ref, watch } from 'vue'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules, type UploadFile } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
 
 import { useUserManagementStore } from '@/stores'
 import type { UserAccountVo } from '@/types/user'
@@ -38,6 +39,7 @@ interface UserFormModel {
 
 const formRef = ref<FormInstance>()
 const isSubmitting = ref(false)
+const isAvatarReading = ref(false)
 const formModel = reactive<UserFormModel>({
   username: '',
   email: '',
@@ -46,7 +48,7 @@ const formModel = reactive<UserFormModel>({
 })
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const URL_PATTERN = /^https?:\/\/\S+$/
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024
 
 function validateUsernameUnique(
   _rule: unknown,
@@ -78,25 +80,12 @@ function validateEmailFormat(
   callback()
 }
 
-function validateAvatarUrl(
-  _rule: unknown,
-  value: string,
-  callback: (error?: Error) => void,
-): void {
-  if (value && !URL_PATTERN.test(value)) {
-    callback(new Error('请输入以 http(s):// 开头的头像地址'))
-    return
-  }
-  callback()
-}
-
 const formRules: FormRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
     { validator: validateUsernameUnique, trigger: 'blur' },
   ],
   email: [{ validator: validateEmailFormat, trigger: 'blur' }],
-  avatar: [{ validator: validateAvatarUrl, trigger: 'blur' }],
   initialPassword: [
     { required: true, message: '请输入初始密码', trigger: 'blur' },
     { min: 8, message: '初始密码长度不少于8位', trigger: 'blur' },
@@ -116,6 +105,32 @@ watch(
     formRef.value?.clearValidate()
   },
 )
+
+function handleAvatarChange(uploadFile: UploadFile): void {
+  const raw = uploadFile.raw
+  if (!raw) {
+    return
+  }
+  if (!raw.type.startsWith('image/')) {
+    ElMessage.error('请上传图片文件')
+    return
+  }
+  if (raw.size > MAX_AVATAR_BYTES) {
+    ElMessage.error('头像图片不能超过 2MB')
+    return
+  }
+  isAvatarReading.value = true
+  const reader = new FileReader()
+  reader.onload = () => {
+    formModel.avatar = typeof reader.result === 'string' ? reader.result : ''
+    isAvatarReading.value = false
+  }
+  reader.onerror = () => {
+    ElMessage.error('头像读取失败，请重试')
+    isAvatarReading.value = false
+  }
+  reader.readAsDataURL(raw)
+}
 
 async function handleSubmit(): Promise<void> {
   const form = formRef.value
@@ -178,11 +193,27 @@ function handleCancel(): void {
         <el-input v-model="formModel.email" placeholder="选填" maxlength="64" />
       </el-form-item>
       <el-form-item label="用户头像" prop="avatar">
-        <el-input
-          v-model="formModel.avatar"
-          placeholder="选填，头像图片地址（URL）"
-          maxlength="256"
-        />
+        <div class="user-form-dialog__avatar-field">
+          <el-upload
+            class="user-form-dialog__avatar-upload"
+            :show-file-list="false"
+            :auto-upload="false"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            :disabled="isSubmitting || isAvatarReading"
+            @change="handleAvatarChange"
+          >
+            <div class="user-form-dialog__avatar" role="button" aria-label="点击上传用户头像">
+              <img
+                v-if="formModel.avatar"
+                :src="formModel.avatar"
+                alt="用户头像预览"
+                class="user-form-dialog__avatar-image"
+              />
+              <el-icon v-else class="user-form-dialog__avatar-plus" :size="28"><Plus /></el-icon>
+            </div>
+          </el-upload>
+          <p class="user-form-dialog__avatar-hint">点击上传，预览按 1:1 展示</p>
+        </div>
       </el-form-item>
       <el-form-item v-if="isCreateMode" label="初始密码" prop="initialPassword">
         <el-input
@@ -205,6 +236,61 @@ function handleCancel(): void {
 .user-form-dialog {
   &__cancel {
     margin-right: var(--space-sm);
+  }
+
+  &__avatar-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  &__avatar-upload {
+    width: 96px;
+  }
+
+  &__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    cursor: pointer;
+    color: var(--color-text-placeholder);
+    background-color: var(--color-bg-page);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    transition:
+      border-color var(--transition-base) var(--ease-standard),
+      color var(--transition-base) var(--ease-standard);
+
+    &:hover {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  &__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 1 / 1;
+  }
+
+  &__avatar-plus {
+    pointer-events: none;
+  }
+
+  &__avatar-hint {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
   }
 }
 </style>

@@ -137,40 +137,42 @@ onUnmounted(() => {
     <div v-loading="isLoading" class="knowledge-base-list-view__table">
       <el-empty v-if="isEmpty" description="尚无已上传知识库文件" />
       <template v-else>
-        <el-table :data="pagedDocuments" row-key="documentId" style="width: 100%">
-          <el-table-column prop="fileName" label="文件名" min-width="240" />
-          <el-table-column label="上传时间" width="180">
-            <template #default="{ row }">
-              {{ formatDateTime(row.uploadedAt) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="文件大小" width="120">
-            <template #default="{ row }">
-              {{ formatFileSize(row.fileSizeBytes) }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="uploaderUsername" label="上传人" width="140" />
-          <el-table-column label="处理状态" width="140">
-            <template #default="{ row }">
-              <el-tag :type="statusTagType(row.status)" disable-transitions>
-                {{ statusText(row.status) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="120" fixed="right">
-            <template #default="{ row }">
-              <el-button
-                v-if="row.status === 'failed'"
-                type="danger"
-                link
-                @click="handleViewFailureReason(row)"
-              >
-                查看原因
-              </el-button>
-              <span v-else class="knowledge-base-list-view__no-action">-</span>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div class="knowledge-base-list-view__table-wrap">
+          <el-table :data="pagedDocuments" row-key="documentId" height="100%" style="width: 100%">
+            <el-table-column prop="fileName" label="文件名" min-width="240" />
+            <el-table-column label="上传时间" width="180">
+              <template #default="{ row }">
+                {{ formatDateTime(row.uploadedAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="文件大小" width="120">
+              <template #default="{ row }">
+                {{ formatFileSize(row.fileSizeBytes) }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="uploaderUsername" label="上传人" width="140" />
+            <el-table-column label="处理状态" width="140">
+              <template #default="{ row }">
+                <el-tag :type="statusTagType(row.status)" disable-transitions>
+                  {{ statusText(row.status) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120" fixed="right">
+              <template #default="{ row }">
+                <el-button
+                  v-if="row.status === 'failed'"
+                  type="danger"
+                  link
+                  @click="handleViewFailureReason(row)"
+                >
+                  查看原因
+                </el-button>
+                <span v-else class="knowledge-base-list-view__no-action">-</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
 
         <el-pagination
           class="knowledge-base-list-view__pagination"
@@ -195,10 +197,15 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .knowledge-base-list-view {
-  padding: var(--space-md);
+  display: flex;
+  flex: 1 0 0;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
 
   &__header {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
     margin-bottom: var(--space-md);
@@ -211,11 +218,30 @@ onUnmounted(() => {
   }
 
   &__table {
-    min-height: 200px;
+    display: flex;
+    flex: 1 0 0;
+    flex-direction: column;
+    min-height: 0;
     padding: var(--space-md);
     background-color: var(--color-bg-card);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
+
+    :deep(.el-table) {
+      width: 100%;
+    }
+
+    :deep(.el-empty) {
+      flex: 1 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &__table-wrap {
+    flex: 1 0 0;
+    min-height: 0;
   }
 
   &__no-action {
@@ -224,8 +250,10 @@ onUnmounted(() => {
 
   &__pagination {
     display: flex;
+    flex-shrink: 0;
     justify-content: flex-end;
-    margin-top: var(--space-md);
+    margin-top: auto;
+    padding-top: var(--space-md);
   }
 }
 </style>

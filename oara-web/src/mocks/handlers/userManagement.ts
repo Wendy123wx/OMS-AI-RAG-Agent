@@ -100,7 +100,7 @@ export function registerUserManagementMocks(register: RegisterMockRoute): void {
     const response: ApiResponse<UserAccountVo[]> = {
       code: 0,
       message: 'ok',
-      data: MOCK_USERS,
+      data: MOCK_USERS.map((item) => ({ ...item })),
       traceId: 'mock-trace',
     }
     return response

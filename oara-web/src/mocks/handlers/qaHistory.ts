@@ -8,7 +8,7 @@ import type { AnswerResultType, SourceReference } from '@/types/qa'
 import type { QueryRecordDetailVo, QueryRecordListItemVo } from '@/types/query-record'
 import type { RegisterMockRoute } from '@/mocks/types'
 
-interface QaHistorySeed {
+export interface QaHistorySeed {
   recordId: string
   accountId: string
   question: string
@@ -119,6 +119,10 @@ function toListItem(seed: QaHistorySeed): QueryRecordListItemVo {
     recordedAt: seed.recordedAt,
     sourceLocatorSummary: summarizeSourceLocators(seed),
   }
+}
+
+export function appendQaHistoryRecord(seed: QaHistorySeed): void {
+  MOCK_HISTORY_SEEDS.push(seed)
 }
 
 function toDetail(seed: QaHistorySeed): QueryRecordDetailVo {

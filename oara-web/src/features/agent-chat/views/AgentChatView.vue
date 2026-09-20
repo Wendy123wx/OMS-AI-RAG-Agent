@@ -56,13 +56,16 @@ async function handleNewSession(): Promise<void> {
   flex-direction: column;
   height: 100%;
   min-height: 0;
+  padding: var(--space-md);
+  overflow: hidden;
+  box-sizing: border-box;
 
   &__toolbar {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: space-between;
-    padding: var(--space-sm) var(--space-md);
-    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-sm) 0 var(--space-md);
   }
 
   &__toolbar-title {
